@@ -1,2 +1,2 @@
 ﻿global using BuildingBlocks.Common.Enums;
-global using MediatR;
+global using BuildingBlocks.CQRS;

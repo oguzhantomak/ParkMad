@@ -1,6 +1,6 @@
 ﻿namespace Vehicle.API.CreateVehicle;
 
-public record CreateVehicleCommand(string LicensePlate, VehicleSize VehicleSize) : IRequest<CreateVehicleResult>;
+public record CreateVehicleCommand(string LicensePlate, VehicleSize VehicleSize) : ICommand<CreateVehicleResult>;
 
 /// <summary>
 /// Geriye oluşturulan aracın Id'sini döner.
@@ -8,10 +8,25 @@ public record CreateVehicleCommand(string LicensePlate, VehicleSize VehicleSize)
 /// <param name="Id"></param>
 public record CreateVehicleResult(Guid Id);
 
-internal class CreateVehicleCommandHandler : IRequestHandler<CreateVehicleCommand, CreateVehicleResult>
+internal class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
 {
-    public async Task<CreateVehicleResult> Handle(CreateVehicleCommand request, CancellationToken cancellationToken)
+    public async Task<CreateVehicleResult> Handle(CreateVehicleCommand command, CancellationToken cancellationToken)
     {
-        throw new System.NotImplementedException();
+        //TODO: Create vehicle business logic
+
+        if (command is not null)
+        {
+            var vehicle = new Models.Vehicle
+            {
+                LicensePlate = command.LicensePlate,
+                VehicleSize = command.VehicleSize
+            };
+        }
+
+        //TODO: Save vehicle to database
+        //TODO: Return vehicle Id
+
+        //TODO: Temp, will be deleted
+        return new CreateVehicleResult(Guid.NewGuid());
     }
 }
