@@ -8,12 +8,10 @@ public record CreateVehicleCommand(string LicensePlate, VehicleSize VehicleSize)
 /// <param name="Id"></param>
 public record CreateVehicleResult(Guid Id);
 
-internal class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
+internal class CreateVehicleCommandHandler(IDocumentSession session) : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
 {
     public async Task<CreateVehicleResult> Handle(CreateVehicleCommand command, CancellationToken cancellationToken)
     {
-        //TODO: Create vehicle business logic
-
         if (command is not null)
         {
             var vehicle = new Models.Vehicle
@@ -21,12 +19,13 @@ internal class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleComman
                 LicensePlate = command.LicensePlate,
                 VehicleSize = command.VehicleSize
             };
+
+            session.Store(vehicle);
+            await session.SaveChangesAsync(cancellationToken);
+
+            return new CreateVehicleResult(vehicle.Id);
         }
 
-        //TODO: Save vehicle to database
-        //TODO: Return vehicle Id
-
-        //TODO: Temp, will be deleted
-        return new CreateVehicleResult(Guid.NewGuid());
+        throw new ArgumentNullException(nameof(command));
     }
 }
