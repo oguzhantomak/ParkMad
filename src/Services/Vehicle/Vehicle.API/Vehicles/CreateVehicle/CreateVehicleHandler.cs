@@ -1,4 +1,6 @@
-﻿namespace Vehicle.API.CreateVehicle;
+﻿using FluentValidation;
+
+namespace Vehicle.API.Vehicles.CreateVehicle;
 
 public record CreateVehicleCommand(string LicensePlate, VehicleSize VehicleSize) : ICommand<CreateVehicleResult>;
 
@@ -8,6 +10,16 @@ public record CreateVehicleCommand(string LicensePlate, VehicleSize VehicleSize)
 /// <param name="Id"></param>
 public record CreateVehicleResult(Guid Id);
 
+public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleCommand>
+{
+    public CreateVehicleCommandValidator()
+    {
+        RuleFor(x => x.LicensePlate).NotEmpty().WithMessage("License plate is required.");
+        RuleFor(x => x.VehicleSize).IsInEnum().WithMessage("Vehicle size is invalid.");
+    }
+
+}
+
 internal class CreateVehicleCommandHandler(IDocumentSession session) : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
 {
     public async Task<CreateVehicleResult> Handle(CreateVehicleCommand command, CancellationToken cancellationToken)
@@ -16,7 +28,7 @@ internal class CreateVehicleCommandHandler(IDocumentSession session) : ICommandH
         {
             var vehicle = new Models.Vehicle
             {
-                LicensePlate = command.LicensePlate,
+                PlateNumber = command.LicensePlate,
                 VehicleSize = command.VehicleSize
             };
 

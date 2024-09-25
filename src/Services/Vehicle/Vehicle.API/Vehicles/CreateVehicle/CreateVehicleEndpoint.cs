@@ -1,4 +1,4 @@
-﻿namespace Vehicle.API.CreateVehicle;
+﻿namespace Vehicle.API.Vehicles.CreateVehicle;
 
 public record CreateVehicleRequest(string LicensePlate, VehicleSize VehicleSize);
 
