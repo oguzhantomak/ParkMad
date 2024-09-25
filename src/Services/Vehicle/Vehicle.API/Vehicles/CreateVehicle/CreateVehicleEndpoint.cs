@@ -1,6 +1,6 @@
 ﻿namespace Vehicle.API.Vehicles.CreateVehicle;
 
-public record CreateVehicleRequest(string LicensePlate, VehicleSize VehicleSize);
+public record CreateVehicleRequest(string PlateNumber, VehicleSize VehicleSize);
 
 public record CreateVehicleResponse(Guid Id);
 
