@@ -3,7 +3,6 @@ global using Parking.API.Models.DTOs;
 global using BuildingBlocks.Validations;
 global using FluentValidation.Results;
 global using System.Text.RegularExpressions;
-global using MapsterMapper;
 global using Microsoft.Extensions.Caching.Memory;
 global using BuildingBlocks.Common.Enums;
 global using Parking.API.UnitOfWork;

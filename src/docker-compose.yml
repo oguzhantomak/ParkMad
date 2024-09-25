@@ -4,11 +4,25 @@ services:
   vehicledb:
     image: postgres
 
+  parkingdb:
+    image: postgres
+  
+  redis:
+    image: redis
+
   vehicle.api:
     image: ${DOCKER_REGISTRY-}vehicleapi
     build:
       context: .
       dockerfile: Services/Vehicle/Vehicle.API/Dockerfile
 
+  parking.api:
+    image: ${DOCKER_REGISTRY-}parkingapi
+    build:
+      context: .
+      dockerfile: Services/Parking/Parking.API/Dockerfile
+
 volumes:
   postgres_vehicle:
+  postgres_parking:
+

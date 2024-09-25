@@ -1,3 +1,5 @@
+using BuildingBlocks.Events;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -17,6 +19,9 @@ builder.Services.AddMarten(opts =>
 {
     opts.Connection(builder.Configuration.GetConnectionString("Database")!);
 }).UseLightweightSessions();
+
+builder.Services.AddSingleton<IEventPublisher, EventPublisher>();
+
 
 if (builder.Environment.IsDevelopment())
 {

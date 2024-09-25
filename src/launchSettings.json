@@ -4,7 +4,8 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "vehicle.api": "StartDebugging"
+        "vehicle.api": "StartDebugging",
+        "parking.api": "StartDebugging"
       }
     }
   }

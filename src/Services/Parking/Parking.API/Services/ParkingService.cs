@@ -3,19 +3,16 @@
     public class ParkingService : IParkingService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
         private readonly ILogger<ParkingService> _logger;
 
         public ParkingService(
             IUnitOfWork unitOfWork,
-            IMapper mapper,
             IMemoryCache cache,
             ILogger<ParkingService> logger,
             IEventPublisher eventPublisher)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _cache = cache;
             _logger = logger;
 
@@ -34,8 +31,6 @@
 
         public async Task<ParkingResponseDto> AssignParkingSpotAsync(ParkingRequestDto request)
         {
-
-
             if (_cache.TryGetValue("VehicleCreatedEventData", out VehicleCreatedEvent vehicleCreatedEvent))
             {
 
@@ -64,11 +59,13 @@
 
                 _logger.LogInformation("Atanan park yeri ID: {SpotId}", spot.Id);
 
+                //return _mapper.Map<ParkingResponseDto>(spot);
                 return new ParkingResponseDto
                 {
-                    SpotId = spot.Id
+                    SpotId = spot.Id,
+                    AssignedAt = (DateTime)spot.OccupiedAt,
+                    ZoneName = spot.Zone.Name
                 };
-
             }
             else
             {
