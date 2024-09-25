@@ -1,6 +1,7 @@
-﻿namespace Parking.API.Services
+﻿using MassTransit;
+namespace Parking.API.Services
 {
-    public class ParkingService : IParkingService
+    public class ParkingService : IParkingService, IConsumer<VehicleCreatedEvent>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
@@ -9,31 +10,43 @@
         public ParkingService(
             IUnitOfWork unitOfWork,
             IMemoryCache cache,
-            ILogger<ParkingService> logger,
-            IEventPublisher eventPublisher)
+            ILogger<ParkingService> logger)
         {
             _unitOfWork = unitOfWork;
             _cache = cache;
             _logger = logger;
-
-            eventPublisher.Subscribe<VehicleCreatedEvent>(HandleVehicleCreatedEvent);
         }
 
-        private Task HandleVehicleCreatedEvent(VehicleCreatedEvent vehicleCreatedEvent, CancellationToken cancellationToken)
+        public async Task Consume(ConsumeContext<VehicleCreatedEvent> context)
         {
+            var vehicleCreatedEvent = context.Message;
             _logger.LogInformation($"Received VehicleCreatedEvent: PlateNumber = {vehicleCreatedEvent.PlateNumber}, VehicleSize = {vehicleCreatedEvent.VehicleSize}");
 
             _cache.Set("VehicleCreatedEventData", vehicleCreatedEvent, TimeSpan.FromMinutes(2));
 
-            return Task.CompletedTask;
-        }
+            var spot = await _unitOfWork.ParkingRepository.GetAvailableSpotAsync(vehicleCreatedEvent.VehicleSize);
 
+            if (spot == null)
+            {
+                _logger.LogWarning("Uygun park yeri bulunamadı.");
+                throw new Exception("Uygun park yeri bulunamadı.");
+            }
+
+            spot.IsOccupied = true;
+            spot.OccupiedAt = DateTime.UtcNow;
+            _unitOfWork.ParkingRepository.Update(spot);
+
+            await _unitOfWork.CompleteAsync();
+
+            _logger.LogInformation("Atanan park yeri ID: {SpotId}", spot.Id);
+
+            await Task.CompletedTask;
+        }
 
         public async Task<ParkingResponseDto> AssignParkingSpotAsync(ParkingRequestDto request)
         {
             if (_cache.TryGetValue("VehicleCreatedEventData", out VehicleCreatedEvent vehicleCreatedEvent))
             {
-
                 _logger.LogInformation($"Processing parking spot assignment for: PlateNumber = {vehicleCreatedEvent.PlateNumber}, VehicleSize = {vehicleCreatedEvent.VehicleSize}");
 
                 var cacheKey = $"AvailableSpot_{vehicleCreatedEvent.VehicleSize}";
@@ -59,7 +72,6 @@
 
                 _logger.LogInformation("Atanan park yeri ID: {SpotId}", spot.Id);
 
-                //return _mapper.Map<ParkingResponseDto>(spot);
                 return new ParkingResponseDto
                 {
                     SpotId = spot.Id,
@@ -72,7 +84,7 @@
                 _logger.LogWarning("No VehicleCreatedEventData found in cache.");
             }
 
-            throw new Exception("Uygun park yeri bulunamadı.");
+            throw new NotFoundException("Uygun park yeri bulunamadı.");
         }
     }
 }

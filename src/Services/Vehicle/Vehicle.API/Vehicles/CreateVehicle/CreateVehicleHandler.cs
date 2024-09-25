@@ -1,5 +1,4 @@
-﻿using BuildingBlocks.Events;
-using System.Text.RegularExpressions;
+﻿
 
 namespace Vehicle.API.Vehicles.CreateVehicle;
 
@@ -32,7 +31,7 @@ public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleComm
     }
 }
 
-internal class CreateVehicleCommandHandler(IDocumentSession session, IEventPublisher eventPublisher) : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
+internal class CreateVehicleCommandHandler(IDocumentSession session, IPublishEndpoint publishEndpoint) : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
 {
     public async Task<CreateVehicleResult> Handle(CreateVehicleCommand command, CancellationToken cancellationToken)
     {
@@ -46,11 +45,10 @@ internal class CreateVehicleCommandHandler(IDocumentSession session, IEventPubli
 
             session.Store(vehicle);
             await session.SaveChangesAsync(cancellationToken);
-
+            
             var vehicleCreatedEvent = new VehicleCreatedEvent(vehicle.PlateNumber, vehicle.VehicleSize);
-            await eventPublisher.Publish(vehicleCreatedEvent, cancellationToken);
-
-
+            await publishEndpoint.Publish(vehicleCreatedEvent, cancellationToken);
+            
             return new CreateVehicleResult(vehicle.Id);
         }
 

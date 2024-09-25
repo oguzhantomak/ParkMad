@@ -11,3 +11,6 @@ global using FluentValidation;
 global using Vehicle.API.Data;
 global using Bogus;
 global using Marten.Schema;
+global using BuildingBlocks.Events;
+global using MassTransit;
+global using System.Text.RegularExpressions;

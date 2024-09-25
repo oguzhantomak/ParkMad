@@ -31,6 +31,13 @@ services:
     ports:
       - "6379:6379"
 
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   vehicle.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -39,6 +46,7 @@ services:
       - ConnectionStrings__Database=Server=vehicledb;Port=5432;Database=VehicleDb;User Id=admin;Password=admin1234;
     depends_on:
       - vehicledb
+      - rabbitmq
     ports:
       - "6000:8080"
       - "6060:8081"
@@ -56,6 +64,7 @@ services:
     depends_on:
       - parkingdb
       - redis
+      - rabbitmq
     ports:
       - "6001:8080"
       - "6061:8081"

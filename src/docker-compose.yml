@@ -10,6 +10,13 @@ services:
   redis:
     image: redis
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   vehicle.api:
     image: ${DOCKER_REGISTRY-}vehicleapi
     build:

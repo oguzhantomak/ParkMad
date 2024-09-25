@@ -11,6 +11,18 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["MassTransit:Host"], h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]);
+            h.Password(builder.Configuration["MassTransit:Password"]);
+        });
+    });
+});
+
 builder.Services.AddValidatorsFromAssembly(assembly);
 
 builder.Services.AddCarter();

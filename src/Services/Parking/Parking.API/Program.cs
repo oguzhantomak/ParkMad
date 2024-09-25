@@ -1,3 +1,5 @@
+using MassTransit;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +8,26 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// MassTransit
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<ParkingService>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["MassTransit:Host"], h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]);
+            h.Password(builder.Configuration["MassTransit:Password"]);
+        });
+
+        cfg.ReceiveEndpoint("vehicle-created-queue", e =>
+        {
+            e.ConfigureConsumer<ParkingService>(context);
+        });
+    });
+});
 
 // Database Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -31,6 +53,13 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Host.UseSerilog();
 
 var app = builder.Build();
+
+// Migrations
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
