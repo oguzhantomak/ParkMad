@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  vehicledb:
+    image: postgres
+
+  vehicle.api:
+    image: ${DOCKER_REGISTRY-}vehicleapi
+    build:
+      context: .
+      dockerfile: Services/Vehicle/Vehicle.API/Dockerfile
+
+volumes:
+  postgres_vehicle:

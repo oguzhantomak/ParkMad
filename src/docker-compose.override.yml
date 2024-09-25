@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  vehicledb:
+    container_name: vehicledb
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=VehicleDb
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_vehicle:/var/lib/postgresql/data
+
+  vehicle.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Database=Server=vehicledb;Port=5432;Database=VehicleDb;User Id=admin;Password=admin1234;
+    depends_on:
+      - vehicledb
+    ports:
+      - "6000:8080"
+      - "6060:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
