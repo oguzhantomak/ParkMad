@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace Vehicle.API.Vehicles.CreateVehicle;
+﻿namespace Vehicle.API.Vehicles.CreateVehicle;
 
 public record CreateVehicleCommand(string LicensePlate, VehicleSize VehicleSize) : ICommand<CreateVehicleResult>;
 
@@ -17,7 +15,6 @@ public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleComm
         RuleFor(x => x.LicensePlate).NotEmpty().WithMessage("License plate is required.");
         RuleFor(x => x.VehicleSize).IsInEnum().WithMessage("Vehicle size is invalid.");
     }
-
 }
 
 internal class CreateVehicleCommandHandler(IDocumentSession session) : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
