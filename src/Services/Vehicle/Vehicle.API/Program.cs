@@ -1,4 +1,4 @@
-using BuildingBlocks.Events;
+using Vehicle.API.Vehicles.CreateVehicle;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,14 +11,23 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<CreateVehicleCommandHandler>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["MassTransit:Host"], h =>
         {
             h.Username(builder.Configuration["MassTransit:Username"]);
             h.Password(builder.Configuration["MassTransit:Password"]);
+        });
+
+        cfg.ReceiveEndpoint("parking-response-queue", e =>
+        {
+            e.ConfigureConsumer<CreateVehicleCommandHandler>(context);
         });
     });
 });

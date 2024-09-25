@@ -16,3 +16,5 @@ global using FluentValidation;
 global using Serilog;
 global using BuildingBlocks.Events;
 global using Microsoft.Extensions.Logging;
+global using MassTransit;
+

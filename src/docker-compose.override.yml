@@ -59,7 +59,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      - ConnectionStrings__Database=Server=parkingdb;Port=5433;Database=ParkingDb;User Id=admin;Password=admin1234;
+      - ConnectionStrings__Database=Server=parkingdb;Port=5432;Database=ParkingDb;User Id=admin;Password=admin1234;
       - ConnectionStrings__Redis=redis:6379;
     depends_on:
       - parkingdb

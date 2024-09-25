@@ -14,3 +14,6 @@ global using Marten.Schema;
 global using BuildingBlocks.Events;
 global using MassTransit;
 global using System.Text.RegularExpressions;
+global using Microsoft.Extensions.Caching.Memory;
+global using Polly;
+global using Vehicle.API.Models.DTOs;
