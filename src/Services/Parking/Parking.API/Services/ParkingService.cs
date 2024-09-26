@@ -1,7 +1,4 @@
-﻿using Parking.API.Events;
-using Polly;
-
-namespace Parking.API.Services
+﻿namespace Parking.API.Services
 {
     public class ParkingService : IParkingService, IConsumer<VehicleCreatedEvent>
     {
@@ -100,27 +97,42 @@ namespace Parking.API.Services
                     ZoneName = spot.Zone.Name,
                 };
 
-                await _publishEndpoint.Publish(pricingRequest);
+                try
+                {
+                    await _publishEndpoint.Publish(pricingRequest);
 
-                var policy = Policy.HandleResult<string>(result => result == null)
-                    .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(2), (result, timeSpan, retryCount, context) =>
+                    var policy = Policy.HandleResult<string>(result => result == null)
+                        .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(2),
+                            (result, timeSpan, retryCount, context) =>
+                            {
+                                _logger.LogWarning($"Retrying to get Pricing data from cache... Attempt: {retryCount}");
+                            });
+
+                    var cachedPrice = await policy.ExecuteAsync(async () =>
                     {
-                        _logger.LogWarning($"Retrying to get Pricing data from cache... Attempt: {retryCount}");
+                        return await _distributedCache.GetStringAsync($"PricingResponse_{request.PlateNumber}");
                     });
 
-                var cachedPrice = await policy.ExecuteAsync(async () =>
-                {
-                    return await _distributedCache.GetStringAsync($"PricingResponse_{request.PlateNumber}");
-                });
-
-                if (!string.IsNullOrEmpty(cachedPrice))
-                {
-                    var priceResponse = JsonSerializer.Deserialize<PriceResponseDto>(cachedPrice);
-                    return new UnparkResponseDto
+                    if (!string.IsNullOrEmpty(cachedPrice))
                     {
-                        Price = priceResponse.Price,
-                        TotalHours = pricingRequest.Duration
-                    };
+                        spot.IsOccupied = false;
+                        spot.OccupiedAt = null;
+                        spot.OccupiedBy = null;
+                        _unitOfWork.ParkingRepository.Update(spot);
+                        await _unitOfWork.CompleteAsync();
+
+                        var priceResponse = JsonSerializer.Deserialize<PriceResponseDto>(cachedPrice);
+                        return new UnparkResponseDto
+                        {
+                            Price = priceResponse.Price,
+                            TotalHours = pricingRequest.Duration
+                        };
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
                 }
 
                 _logger.LogError("Failed to retrieve Pricing data from cache.");

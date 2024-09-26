@@ -29,6 +29,12 @@ services:
       context: .
       dockerfile: Services/Parking/Parking.API/Dockerfile
 
+  pricing.api:
+    image: ${DOCKER_REGISTRY-}pricingapi
+    build:
+      context: .
+      dockerfile: Services/Pricing/Pricing.API/Dockerfile
+
 volumes:
   postgres_vehicle:
   postgres_parking:

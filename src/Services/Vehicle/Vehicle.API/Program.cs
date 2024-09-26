@@ -1,5 +1,3 @@
-using Vehicle.API.Vehicles.CreateVehicle;
-
 var builder = WebApplication.CreateBuilder(args);
 
 

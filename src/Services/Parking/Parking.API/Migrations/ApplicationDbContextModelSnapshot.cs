@@ -36,6 +36,9 @@ namespace Parking.API.Migrations
                     b.Property<DateTime?>("OccupiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("OccupiedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("VehicleSize")
                         .HasColumnType("int");
 

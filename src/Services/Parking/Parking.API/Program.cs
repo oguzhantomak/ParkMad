@@ -1,6 +1,3 @@
-using MassTransit;
-using Parking.API.Events;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -44,7 +41,6 @@ builder.Services.AddScoped<IParkingService, ParkingService>();
 builder.Services.AddScoped<IParkingRepository, ParkingRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IEventPublisher, EventPublisher>();
-builder.Services.AddScoped<IParkingService, ParkingService>();
 
 // FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();

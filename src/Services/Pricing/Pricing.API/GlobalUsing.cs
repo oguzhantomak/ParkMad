@@ -1,0 +1,9 @@
+﻿global using System.Text.Json;
+global using BuildingBlocks.Events;
+global using Pricing.API.Models.DTOs;
+global using MassTransit;
+global using Microsoft.Extensions.Caching.Distributed;
+global using Pricing.API.Services;
+global using BuildingBlocks.Exceptions;
+global using Pricing.API.Consumers;
+global using Serilog;

@@ -8,9 +8,9 @@ public class PriceStrategyFactory : IPriceStrategyFactory
     {
         return regionName switch
         {
-            "A" => new RegionAPriceStrategy(),
-            "B" => new RegionBPriceStrategy(),
-            "C" => new RegionCPriceStrategy(),
+            "Zone A" => new RegionAPriceStrategy(),
+            "Zone B" => new RegionBPriceStrategy(),
+            "Zone C" => new RegionCPriceStrategy(),
             _ => throw new Exception("Geçersiz bölge adı.")
         };
     }

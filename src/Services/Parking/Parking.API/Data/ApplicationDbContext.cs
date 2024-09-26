@@ -2,7 +2,6 @@
 {
     public class ApplicationDbContext : DbContext
     {
-        // Constructor correctly calling the base class constructor
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }

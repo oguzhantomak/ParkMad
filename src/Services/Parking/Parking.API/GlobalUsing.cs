@@ -19,3 +19,5 @@ global using Microsoft.Extensions.Logging;
 global using MassTransit;
 global using System.Text.Json;
 global using Microsoft.Extensions.Caching.Distributed;
+global using Polly;
+global using PricingRequestEvent = BuildingBlocks.Events.PricingRequestEvent;

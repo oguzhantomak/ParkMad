@@ -37,7 +37,8 @@ namespace Parking.API.Migrations
                     ZoneId = table.Column<int>(type: "int", nullable: false),
                     IsOccupied = table.Column<bool>(type: "bit", nullable: false),
                     VehicleSize = table.Column<int>(type: "int", nullable: false),
-                    OccupiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    OccupiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    OccupiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,15 +63,15 @@ namespace Parking.API.Migrations
 
             migrationBuilder.InsertData(
                 table: "ParkingSpots",
-                columns: new[] { "Id", "IsOccupied", "OccupiedAt", "VehicleSize", "ZoneId" },
+                columns: new[] { "Id", "IsOccupied", "OccupiedAt", "OccupiedBy", "VehicleSize", "ZoneId" },
                 values: new object[,]
                 {
-                    { 1, false, null, 0, 1 },
-                    { 2, false, null, 1, 2 },
-                    { 3, false, null, 2, 2 },
-                    { 4, true, null, 0, 3 },
-                    { 5, true, null, 1, 3 },
-                    { 6, false, null, 2, 3 }
+                    { 1, false, null, null, 0, 1 },
+                    { 2, false, null, null, 1, 2 },
+                    { 3, false, null, null, 2, 2 },
+                    { 4, true, null, null, 0, 3 },
+                    { 5, true, null, null, 1, 3 },
+                    { 6, false, null, null, 2, 3 }
                 });
 
             migrationBuilder.CreateIndex(

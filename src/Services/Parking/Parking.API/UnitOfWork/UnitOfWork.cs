@@ -5,7 +5,6 @@
         private readonly ApplicationDbContext _context;
         private IParkingRepository _parkingRepository;
 
-        // Constructor accepting ApplicationDbContext
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;

@@ -12,7 +12,7 @@ using Parking.API.Data;
 namespace Parking.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240926112336_first")]
+    [Migration("20240926135218_first")]
     partial class first
     {
         /// <inheritdoc />
@@ -38,6 +38,9 @@ namespace Parking.API.Migrations
 
                     b.Property<DateTime?>("OccupiedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("OccupiedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VehicleSize")
                         .HasColumnType("int");
