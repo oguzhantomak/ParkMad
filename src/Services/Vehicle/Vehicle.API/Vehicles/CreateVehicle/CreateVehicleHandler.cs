@@ -24,7 +24,7 @@ public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleComm
     }
 }
 
-internal class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
+public class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
 {
     private readonly IDocumentSession _session;
     private readonly IDistributedCache _distributedCache;

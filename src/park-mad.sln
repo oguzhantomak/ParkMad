@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parking.API", "Services\Par
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pricing", "Pricing", "{623B8B28-C378-4C20-BF34-6367CEB1FFFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pricing.API", "Services\Pricing\Pricing.API\Pricing.API.csproj", "{AC732D9D-2466-4D88-A7DB-6981FF1162FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pricing.API", "Services\Pricing\Pricing.API\Pricing.API.csproj", "{AC732D9D-2466-4D88-A7DB-6981FF1162FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "park-mad.Tests", "..\park-mad.Tests\park-mad.Tests.csproj", "{C201D3C6-727C-42A2-A0B2-2E95B0CFDF41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{AC732D9D-2466-4D88-A7DB-6981FF1162FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC732D9D-2466-4D88-A7DB-6981FF1162FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC732D9D-2466-4D88-A7DB-6981FF1162FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C201D3C6-727C-42A2-A0B2-2E95B0CFDF41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C201D3C6-727C-42A2-A0B2-2E95B0CFDF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C201D3C6-727C-42A2-A0B2-2E95B0CFDF41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C201D3C6-727C-42A2-A0B2-2E95B0CFDF41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
