@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Parking.API.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class FirstMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

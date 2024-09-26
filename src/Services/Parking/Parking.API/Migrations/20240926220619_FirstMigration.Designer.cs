@@ -12,8 +12,8 @@ using Parking.API.Data;
 namespace Parking.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240926135218_first")]
-    partial class first
+    [Migration("20240926220619_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
