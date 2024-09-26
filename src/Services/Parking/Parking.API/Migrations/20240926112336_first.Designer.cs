@@ -12,7 +12,7 @@ using Parking.API.Data;
 namespace Parking.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240926084653_first")]
+    [Migration("20240926112336_first")]
     partial class first
     {
         /// <inheritdoc />
