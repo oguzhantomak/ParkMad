@@ -30,10 +30,13 @@ builder.Services.AddMassTransit(x =>
 });
 
 // Database Context
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        options => options.CommandTimeout(180).EnableRetryOnFailure()));
 
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings");
+var connectionStringx = Environment.GetEnvironmentVariable("ConnectionStrings__Database");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionStringx,
+        sqlOptions => sqlOptions.CommandTimeout(180).EnableRetryOnFailure()));
 
 // Dependency Injection
 builder.Services.AddScoped<IParkingService, ParkingService>();

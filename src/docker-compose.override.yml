@@ -12,24 +12,30 @@ services:
       - "5432:5432"
     volumes:
       - postgres_vehicle:/var/lib/postgresql/data
- 
+    networks:
+      - parking-network
+
   parkingdb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: parkingdb
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin1234
-      - POSTGRES_DB=ParkingDb
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
     restart: always
     ports:
-      - "5433:5432"
+      - "1433:1433"
     volumes:
-      - postgres_parking:/var/lib/postgresql/data
+      - mssql_parking:/var/opt/mssql
+    networks:
+      - parking-network
 
   redis:
     container_name: redis
     image: redis
     ports:
       - "6379:6379"
+    networks:
+      - parking-network
 
   rabbitmq:
     container_name: rabbitmq
@@ -37,6 +43,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - parking-network
 
   vehicle.api:
     environment:
@@ -53,13 +61,15 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+      - parking-network
 
   parking.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      - ConnectionStrings__Database=Server=parkingdb;Port=5432;Database=ParkingDb;User Id=admin;Password=admin1234;
+      - ConnectionStrings__Database=Server=parkingdb;Database=ParkingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;Encrypt=False;
       - ConnectionStrings__Redis=redis:6379;
     depends_on:
       - parkingdb
@@ -71,3 +81,13 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+      - parking-network
+
+volumes:
+  postgres_vehicle:
+  mssql_parking:
+
+networks:
+  parking-network:
+    driver: bridge

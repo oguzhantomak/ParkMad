@@ -5,7 +5,7 @@ services:
     image: postgres
 
   parkingdb:
-    image: postgres
+    image: mcr.microsoft.com/mssql/server:2022-latest
   
   redis:
     image: redis
