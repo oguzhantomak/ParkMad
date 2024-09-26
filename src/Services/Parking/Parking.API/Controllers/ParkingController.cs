@@ -11,4 +11,11 @@ public class ParkingController(IParkingService parkingService) : ControllerBase
         var response = await parkingService.AssignParkingSpotAsync(request);
         return Ok(response);
     }
+
+    [HttpPost("unassign")]
+    public async Task<IActionResult> ReleaseParkingSpot([FromBody] UnparkRequestDto request)
+    {
+        await parkingService.ReleaseParkingSpotAsync(request);
+        return Ok();
+    }
 }

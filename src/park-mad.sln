@@ -9,15 +9,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parking", "Parking", "{FE7B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vehicle", "Vehicle", "{E0AFC842-E64B-40A6-8427-B30FEFA95CAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vehicle.API", "Services\Vehicle\Vehicle.API\Vehicle.API.csproj", "{D159DC13-0BF7-4EC0-887D-C5F7E78EB097}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vehicle.API", "Services\Vehicle\Vehicle.API\Vehicle.API.csproj", "{D159DC13-0BF7-4EC0-887D-C5F7E78EB097}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{D46F8DA6-329B-45E3-B171-44F8C1616918}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks", "BuildingBlocks\BuildingBlocks\BuildingBlocks.csproj", "{2568ABAD-CA5A-4AC8-B43C-14A7B2061108}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildingBlocks", "BuildingBlocks\BuildingBlocks\BuildingBlocks.csproj", "{2568ABAD-CA5A-4AC8-B43C-14A7B2061108}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{EEB84BE9-FB3F-45D0-9419-4CAB00F858E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parking.API", "Services\Parking\Parking.API\Parking.API.csproj", "{06228ED5-C495-42EB-81B9-134A46627905}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parking.API", "Services\Parking\Parking.API\Parking.API.csproj", "{06228ED5-C495-42EB-81B9-134A46627905}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pricing", "Pricing", "{623B8B28-C378-4C20-BF34-6367CEB1FFFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pricing.API", "Services\Pricing\Pricing.API\Pricing.API.csproj", "{AC732D9D-2466-4D88-A7DB-6981FF1162FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,10 @@ Global
 		{06228ED5-C495-42EB-81B9-134A46627905}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06228ED5-C495-42EB-81B9-134A46627905}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06228ED5-C495-42EB-81B9-134A46627905}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC732D9D-2466-4D88-A7DB-6981FF1162FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC732D9D-2466-4D88-A7DB-6981FF1162FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC732D9D-2466-4D88-A7DB-6981FF1162FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC732D9D-2466-4D88-A7DB-6981FF1162FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +59,8 @@ Global
 		{D159DC13-0BF7-4EC0-887D-C5F7E78EB097} = {E0AFC842-E64B-40A6-8427-B30FEFA95CAE}
 		{2568ABAD-CA5A-4AC8-B43C-14A7B2061108} = {D46F8DA6-329B-45E3-B171-44F8C1616918}
 		{06228ED5-C495-42EB-81B9-134A46627905} = {FE7B90EC-67F3-4626-8016-847B22EBEACC}
+		{623B8B28-C378-4C20-BF34-6367CEB1FFFF} = {D8D2EAB0-7CED-4894-806E-C62D27B0F15E}
+		{AC732D9D-2466-4D88-A7DB-6981FF1162FA} = {623B8B28-C378-4C20-BF34-6367CEB1FFFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A46FAEF-2FB0-473B-8506-C46C77353FDE}

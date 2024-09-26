@@ -1,4 +1,5 @@
 using MassTransit;
+using Parking.API.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 

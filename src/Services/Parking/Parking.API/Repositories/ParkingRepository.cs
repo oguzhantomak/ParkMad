@@ -12,6 +12,14 @@ public class ParkingRepository(ApplicationDbContext context) : IParkingRepositor
             .FirstOrDefaultAsync();
     }
 
+    public async Task<ParkingSpot> GetSpotByPlateNumber(string plateNumber)
+    {
+        return await context.ParkingSpots
+            .Include(ps => ps.Zone)
+            .Where(ps => ps.OccupiedBy == plateNumber)
+            .FirstOrDefaultAsync();
+    }
+
     public void Update(ParkingSpot spot)
     {
         context.ParkingSpots.Update(spot);
