@@ -1,11 +1,7 @@
 ﻿namespace Vehicle.API.Vehicles.CreateVehicle;
 
 public record CreateVehicleCommand(string PlateNumber, VehicleSize VehicleSize) : ICommand<CreateVehicleResult>;
-
-/// <summary>
-/// Geriye oluşturulan aracın Id'sini, park yeri ID'sini, bölge adını ve atama zamanını döner.
-/// </summary>
-public record CreateVehicleResult(Guid Id, int SpotId, string ZoneName, DateTime AssignedAt);
+public record CreateVehicleResult(ParkingResponseDto Response);
 
 public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleCommand>
 {
@@ -28,30 +24,19 @@ public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleComm
     }
 }
 
-internal class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>, IConsumer<ParkingResponseDto>
+internal class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleCommand, CreateVehicleResult>
 {
     private readonly IDocumentSession _session;
-    private readonly IPublishEndpoint _publishEndpoint;
-    private readonly IMemoryCache _cache;
+    private readonly IDistributedCache _distributedCache;
     private readonly ILogger<CreateVehicleCommandHandler> _logger;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CreateVehicleCommandHandler(IDocumentSession session, IPublishEndpoint publishEndpoint, IMemoryCache cache, ILogger<CreateVehicleCommandHandler> logger)
+    public CreateVehicleCommandHandler(IDocumentSession session, IDistributedCache distributedCache, ILogger<CreateVehicleCommandHandler> logger, IPublishEndpoint publishEndpoint)
     {
         _session = session;
-        _publishEndpoint = publishEndpoint;
-        _cache = cache;
+        _distributedCache = distributedCache;
         _logger = logger;
-    }
-
-    public async Task Consume(ConsumeContext<ParkingResponseDto> context)
-    {
-        var parkingResponse = context.Message;
-
-        _logger.LogInformation($"Received ParkingResponse: SpotId = {parkingResponse.SpotId}, AssignedAt = {parkingResponse.AssignedAt}, ZoneName = {parkingResponse.ZoneName}");
-
-        _cache.Set(parkingResponse.SpotId, parkingResponse, TimeSpan.FromMinutes(5));
-
-        await Task.CompletedTask;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<CreateVehicleResult> Handle(CreateVehicleCommand command, CancellationToken cancellationToken)
@@ -70,30 +55,31 @@ internal class CreateVehicleCommandHandler : ICommandHandler<CreateVehicleComman
             var vehicleCreatedEvent = new VehicleCreatedEvent(vehicle.PlateNumber, vehicle.VehicleSize);
             await _publishEndpoint.Publish(vehicleCreatedEvent, cancellationToken);
 
-
-            var policy = Policy.HandleResult<ParkingResponseDto>(result => result == null)
+            var policy = Policy.HandleResult<string>(result => result == null)
                 .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(2), (result, timeSpan, retryCount, context) =>
                 {
-                    _logger.LogWarning($"Retrying to get ParkingResponse from cache... Attempt: {retryCount}");
+                    _logger.LogWarning($"Retrying to get ParkingResponse from Redis... Attempt: {retryCount}");
                 });
 
-            ParkingResponseDto parkingResponse = await policy.ExecuteAsync(() =>
+            string cachedResponse = await policy.ExecuteAsync(async () =>
             {
-                _cache.TryGetValue(vehicle.PlateNumber, out ParkingResponseDto cachedResponse);
-                return Task.FromResult(cachedResponse);
+                return await _distributedCache.GetStringAsync($"ParkingResponse_{vehicle.PlateNumber}");
             });
 
-            if (parkingResponse != null)
+            if (!string.IsNullOrEmpty(cachedResponse))
             {
-                _logger.LogInformation($"Successfully retrieved ParkingResponse from cache: SpotId = {parkingResponse.SpotId}");
+                var parkingResponse = JsonSerializer.Deserialize<ParkingResponseDto>(cachedResponse);
 
-                return new CreateVehicleResult(vehicle.Id, parkingResponse.SpotId, parkingResponse.ZoneName, parkingResponse.AssignedAt);
+                if (parkingResponse != null)
+                {
+                    _logger.LogInformation($"Successfully retrieved ParkingResponse from Redis: SpotId = {parkingResponse.SpotId}");
+
+                    return new CreateVehicleResult(parkingResponse);
+                }
             }
-            else
-            {
-                _logger.LogError("Failed to retrieve ParkingResponse from cache after 5 attempts.");
-                throw new Exception("Parking response could not be retrieved from cache.");
-            }
+
+            _logger.LogError("Failed to retrieve ParkingResponse from Redis after 5 attempts.");
+            throw new Exception("Parking response could not be retrieved from Redis.");
         }
 
         throw new ArgumentNullException(nameof(command));

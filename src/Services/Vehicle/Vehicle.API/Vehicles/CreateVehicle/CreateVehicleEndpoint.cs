@@ -2,7 +2,7 @@
 
 public record CreateVehicleRequest(string PlateNumber, VehicleSize VehicleSize);
 
-public record CreateVehicleResponse(Guid Id);
+public record CreateVehicleResponse(ParkingResponseDto Response);
 
 public class CreateVehicleEndpoint : ICarterModule
 {
@@ -17,7 +17,7 @@ public class CreateVehicleEndpoint : ICarterModule
 
                     var response = result.Adapt<CreateVehicleResponse>();
 
-                    return Results.Created($"/vehicles/{response.Id}", response);
+                    return Results.Created($"/vehicles/{response.Response.PlateNumber}", response);
                 })
             .WithName("CreateVehicle")
             .Produces<CreateVehicleResponse>(StatusCodes.Status201Created)

@@ -31,12 +31,12 @@ builder.Services.AddMassTransit(x =>
 
 // Database Context
 
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings");
-var connectionStringx = Environment.GetEnvironmentVariable("ConnectionStrings__Database");
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Database");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionStringx,
+    options.UseSqlServer(connectionString,
         sqlOptions => sqlOptions.CommandTimeout(180).EnableRetryOnFailure()));
+
 
 // Dependency Injection
 builder.Services.AddScoped<IParkingService, ParkingService>();
@@ -50,9 +50,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Caching
 builder.Services.AddMemoryCache();
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.Configuration = Environment.GetEnvironmentVariable("ConnectionStrings__Redis");
+    options.InstanceName = "ParkingAppRedisInstance";
 });
 builder.Host.UseSerilog();
 

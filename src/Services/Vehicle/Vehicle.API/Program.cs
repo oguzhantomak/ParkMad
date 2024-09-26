@@ -15,8 +15,6 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<CreateVehicleCommandHandler>();
-
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["MassTransit:Host"], h =>
@@ -24,12 +22,13 @@ builder.Services.AddMassTransit(x =>
             h.Username(builder.Configuration["MassTransit:Username"]);
             h.Password(builder.Configuration["MassTransit:Password"]);
         });
-
-        cfg.ReceiveEndpoint("parking-response-queue", e =>
-        {
-            e.ConfigureConsumer<CreateVehicleCommandHandler>(context);
-        });
     });
+});
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = Environment.GetEnvironmentVariable("ConnectionStrings__Redis");
+    options.InstanceName = "ParkingAppRedisInstance";
 });
 
 builder.Services.AddValidatorsFromAssembly(assembly);

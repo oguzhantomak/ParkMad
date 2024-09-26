@@ -3,20 +3,17 @@
     public class ParkingService : IParkingService, IConsumer<VehicleCreatedEvent>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMemoryCache _cache;
+        private readonly IDistributedCache _distributedCache;
         private readonly ILogger<ParkingService> _logger;
-        private readonly IPublishEndpoint _publishEndpoint;
 
         public ParkingService(
             IUnitOfWork unitOfWork,
-            IMemoryCache cache,
-            ILogger<ParkingService> logger,
-            IPublishEndpoint publishEndpoint)
+            IDistributedCache distributedCache,
+            ILogger<ParkingService> logger)
         {
             _unitOfWork = unitOfWork;
-            _cache = cache;
+            _distributedCache = distributedCache;
             _logger = logger;
-            _publishEndpoint = publishEndpoint;
         }
 
         public async Task Consume(ConsumeContext<VehicleCreatedEvent> context)
@@ -24,7 +21,12 @@
             var vehicleCreatedEvent = context.Message;
             _logger.LogInformation($"Received VehicleCreatedEvent: PlateNumber = {vehicleCreatedEvent.PlateNumber}, VehicleSize = {vehicleCreatedEvent.VehicleSize}");
 
-            _cache.Set("VehicleCreatedEventData", vehicleCreatedEvent, TimeSpan.FromMinutes(2));
+            var eventData = JsonSerializer.Serialize(vehicleCreatedEvent);
+
+            await _distributedCache.SetStringAsync("VehicleCreatedEventData", eventData, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+            });
 
             try
             {
@@ -32,7 +34,6 @@
 
                 if (spot == null)
                 {
-                    // TODO: Rollback event will be triggered!
                     _logger.LogWarning("No suitable parking spot found.");
                     throw new Exception("No suitable parking spot found.");
                 }
@@ -47,17 +48,22 @@
                 {
                     SpotId = spot.Id,
                     AssignedAt = DateTime.UtcNow,
-                    ZoneName = spot.Zone.Name
+                    ZoneName = spot.Zone.Name,
+                    PlateNumber = vehicleCreatedEvent.PlateNumber
                 };
 
-                await _publishEndpoint.Publish(parkingResponse);
+                var parkingResponseData = JsonSerializer.Serialize(parkingResponse);
+
+                await _distributedCache.SetStringAsync($"ParkingResponse_{vehicleCreatedEvent.PlateNumber}", parkingResponseData, new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                });
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
                 throw;
             }
-            // Removed redundant await Task.CompletedTask;
         }
 
         public async Task<ParkingResponseDto> AssignParkingSpotAsync(ParkingRequestDto request)
@@ -71,6 +77,7 @@
                 Console.WriteLine(e);
                 throw;
             }
+
             throw new NotImplementedException();
         }
     }

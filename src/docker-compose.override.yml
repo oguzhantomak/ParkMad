@@ -52,8 +52,10 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__Database=Server=vehicledb;Port=5432;Database=VehicleDb;User Id=admin;Password=admin1234;
+      - ConnectionStrings__Redis=redis:6379
     depends_on:
       - vehicledb
+      - redis
       - rabbitmq
     ports:
       - "6000:8080"
@@ -70,7 +72,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__Database=Server=parkingdb;Database=ParkingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;Encrypt=False;
-      - ConnectionStrings__Redis=redis:6379;
+      - ConnectionStrings__Redis=redis:6379
     depends_on:
       - parkingdb
       - redis

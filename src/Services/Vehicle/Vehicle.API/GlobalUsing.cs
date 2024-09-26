@@ -17,3 +17,5 @@ global using System.Text.RegularExpressions;
 global using Microsoft.Extensions.Caching.Memory;
 global using Polly;
 global using Vehicle.API.Models.DTOs;
+global using System.Text.Json;
+global using Microsoft.Extensions.Caching.Distributed;
