@@ -1,36 +1,48 @@
 ﻿namespace Parking.API.Services
 {
-    public class ParkingService(
-        IUnitOfWork unitOfWork,
-        IMemoryCache cache,
-        ILogger<ParkingService> logger,
-        IPublishEndpoint publishEndpoint)
-        : IParkingService, IConsumer<VehicleCreatedEvent>
+    public class ParkingService : IParkingService, IConsumer<VehicleCreatedEvent>
     {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMemoryCache _cache;
+        private readonly ILogger<ParkingService> _logger;
+        private readonly IPublishEndpoint _publishEndpoint;
+
+        // Constructor accepting dependencies
+        public ParkingService(
+            IUnitOfWork unitOfWork,
+            IMemoryCache cache,
+            ILogger<ParkingService> logger,
+            IPublishEndpoint publishEndpoint)
+        {
+            _unitOfWork = unitOfWork;
+            _cache = cache;
+            _logger = logger;
+            _publishEndpoint = publishEndpoint;
+        }
+
         public async Task Consume(ConsumeContext<VehicleCreatedEvent> context)
         {
             var vehicleCreatedEvent = context.Message;
-            logger.LogInformation($"Received VehicleCreatedEvent: PlateNumber = {vehicleCreatedEvent.PlateNumber}, VehicleSize = {vehicleCreatedEvent.VehicleSize}");
+            _logger.LogInformation($"Received VehicleCreatedEvent: PlateNumber = {vehicleCreatedEvent.PlateNumber}, VehicleSize = {vehicleCreatedEvent.VehicleSize}");
 
-            cache.Set("VehicleCreatedEventData", vehicleCreatedEvent, TimeSpan.FromMinutes(2));
+            _cache.Set("VehicleCreatedEventData", vehicleCreatedEvent, TimeSpan.FromMinutes(2));
 
             try
             {
-                var spot = await unitOfWork.ParkingRepository.GetAvailableSpotAsync(vehicleCreatedEvent.VehicleSize);
+                var spot = await _unitOfWork.ParkingRepository.GetAvailableSpotAsync(vehicleCreatedEvent.VehicleSize);
 
                 if (spot == null)
                 {
-                    //TODO: Rollback eventı fırlatılacak!
-
-                    logger.LogWarning("Uygun park yeri bulunamadı.");
-                    throw new Exception("Uygun park yeri bulunamadı.");
+                    // TODO: Rollback event will be triggered!
+                    _logger.LogWarning("No suitable parking spot found.");
+                    throw new Exception("No suitable parking spot found.");
                 }
 
                 spot.IsOccupied = true;
                 spot.OccupiedAt = DateTime.UtcNow;
-                unitOfWork.ParkingRepository.Update(spot);
+                _unitOfWork.ParkingRepository.Update(spot);
 
-                await unitOfWork.CompleteAsync();
+                await _unitOfWork.CompleteAsync();
 
                 var parkingResponse = new ParkingResponseDto
                 {
@@ -39,18 +51,27 @@
                     ZoneName = spot.Zone.Name
                 };
 
-                await publishEndpoint.Publish(parkingResponse);
+                await _publishEndpoint.Publish(parkingResponse);
             }
             catch (Exception e)
             {
-                logger.LogError(e.Message);
+                _logger.LogError(e.Message);
                 throw;
             }
-            await Task.CompletedTask;
+            // Removed redundant await Task.CompletedTask;
         }
 
         public async Task<ParkingResponseDto> AssignParkingSpotAsync(ParkingRequestDto request)
         {
+            try
+            {
+                var spot = await _unitOfWork.ParkingRepository.GetAvailableSpotAsync(VehicleSize.Large);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             throw new NotImplementedException();
         }
     }

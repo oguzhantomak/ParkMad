@@ -1,23 +1,31 @@
-﻿namespace Parking.API.UnitOfWork;
-
-public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
+﻿namespace Parking.API.UnitOfWork
 {
-    private IParkingRepository _parkingRepository;
-
-    public IParkingRepository ParkingRepository
+    public class UnitOfWork : IUnitOfWork
     {
-        get { return _parkingRepository ??= new ParkingRepository(context); }
-    }
+        private readonly ApplicationDbContext _context;
+        private IParkingRepository _parkingRepository;
 
-    public async Task<int> CompleteAsync()
-    {
-        return await context.SaveChangesAsync();
-    }
+        // Constructor accepting ApplicationDbContext
+        public UnitOfWork(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-    public void Rollback()
-    {
-        context.ChangeTracker.Entries()
-            .ToList()
-            .ForEach(e => e.State = EntityState.Unchanged);
+        public IParkingRepository ParkingRepository
+        {
+            get { return _parkingRepository ??= new ParkingRepository(_context); }
+        }
+
+        public async Task<int> CompleteAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        public void Rollback()
+        {
+            _context.ChangeTracker.Entries()
+                .ToList()
+                .ForEach(e => e.State = EntityState.Unchanged);
+        }
     }
 }

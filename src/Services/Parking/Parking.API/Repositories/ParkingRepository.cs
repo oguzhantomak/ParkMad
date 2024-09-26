@@ -4,6 +4,8 @@ public class ParkingRepository(ApplicationDbContext context) : IParkingRepositor
 {
     public async Task<ParkingSpot> GetAvailableSpotAsync(VehicleSize size)
     {
+        var count = await context.ParkingSpots.CountAsync();
+
         return await context.ParkingSpots
             .Include(ps => ps.Zone)
             .Where(ps => !ps.IsOccupied && ps.VehicleSize == size)

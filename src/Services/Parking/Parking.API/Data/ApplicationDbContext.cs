@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Parking.API.Data
+﻿namespace Parking.API.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public class ApplicationDbContext : DbContext
     {
+        // Constructor correctly calling the base class constructor
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
+
         public DbSet<ParkingSpot> ParkingSpots { get; set; }
         public DbSet<ParkingZone> ParkingZones { get; set; }
 
@@ -11,6 +14,7 @@ namespace Parking.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Seed data
             modelBuilder.Entity<ParkingZone>().HasData(
                 new ParkingZone { Id = 1, Name = "Zone A", Capacity = 1, VehicleSize = VehicleSize.Small },
                 new ParkingZone { Id = 2, Name = "Zone B", Capacity = 2, VehicleSize = VehicleSize.Medium },

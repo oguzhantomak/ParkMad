@@ -4,9 +4,9 @@ public class ParkingRequestDto : IValidatable
 {
     public string PlateNumber { get; set; }
 
-    public async Task<ValidationResult> ValidateAsync()
+    public async Task<FluentValidation.Results.ValidationResult> ValidateAsync()
     {
-        var validationResult = new ValidationResult();
+        var validationResult = new FluentValidation.Results.ValidationResult();
 
         if (string.IsNullOrEmpty(PlateNumber))
         {
